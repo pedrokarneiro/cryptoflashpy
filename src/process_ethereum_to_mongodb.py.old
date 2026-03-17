@@ -1,0 +1,77 @@
+import os # For file path handling
+import pandas as pd # For data manipulation
+from pymongo import MongoClient # For MongoDB connection
+from tqdm import tqdm  # Progress bar library
+
+def process_ethereum():
+    """
+    Cleans and transforms raw Ethereum historical data and saves to MongoDB.
+    Uses tqdm to visualize the data injection progress.
+    """
+    print("--- Starting Ethereum Data Transformation (MongoDB) ---")
+    
+    # Path Configuration
+    raw_file = os.path.join('..', 'data', 'raw', 'ethereum', 'ethereum_historical_data.csv')
+    
+    if not os.path.exists(raw_file):
+        print(f" ❌ Error: Ethereum raw file not found at {raw_file}")
+        return
+
+    # 1. Load Data
+    print(" - Loading Ethereum CSV...")
+    df = pd.read_csv(raw_file)
+
+    # 2. Standardize Column Names & Types
+    if 'date' in df.columns:
+        print(" - Converting 'Date' strings to datetime objects...")
+        df['timestamp'] = pd.to_datetime(df['date'])
+        # Drop the old string column to keep schema clean
+        df = df.drop(columns=['date'])
+    
+    # Ensure columns are ordered with Timestamp first
+    cols = ['timestamp'] + [c for c in df.columns if c != 'timestamp']
+    df = df[cols]
+
+    # 3. Save to MongoDB
+    total_records = len(df)
+    print(f" - Preparing {total_records:,} records for MongoDB...")
+    print(f" - Time range: {df['timestamp'].min()} to {df['timestamp'].max()}")
+    
+    try:
+        # Connection to MongoDB container
+        client = MongoClient('mongodb://mongodb:27017/')
+        db = client['cryptoflash_db']
+        collection = db['ethereum_history']
+
+        # Clear old records to avoid duplication
+        print(" - Clearing old records in 'ethereum_history'...")
+        collection.delete_many({})
+
+        # Convert to dictionary format (JSON-like for Mongo)
+        print(" - Converting to records format...")
+        data_dict = df.to_dict('records')
+
+        # 4. Chunked Insertion with Progress Bar
+        chunk_size = 50000
+        
+        # tqdm context manager for the 'whole' (total_records)
+        with tqdm(total=total_records, desc="💾 Injecting Ethereum Data", unit="rows") as pbar:
+            for i in range(0, total_records, chunk_size):
+                # Selecting the 'part' (chunk)
+                chunk = data_dict[i : i + chunk_size]
+                
+                # Database injection
+                collection.insert_many(chunk)
+                
+                # Updating the 'whole' bar with the size of the 'part' just processed
+                pbar.update(len(chunk))
+
+        print(f" ✅ Ethereum processing complete. Collection: {collection.full_name}")
+        
+    except Exception as e:
+        print(f" ❌ MongoDB Error: {e}")
+    finally:
+        client.close()
+
+if __name__ == "__main__":
+    process_ethereum()

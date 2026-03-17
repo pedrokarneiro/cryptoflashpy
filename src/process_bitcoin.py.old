@@ -1,0 +1,49 @@
+import os
+import pandas as pd
+
+def process_bitcoin():
+    """
+    Cleans and transforms raw Bitcoin historical data.
+    Source: mczielinski/bitcoin-historical-data (Minute-by-minute)
+    """
+    print("--- Starting Bitcoin Data Transformation ---")
+    
+    # Path Configuration
+    raw_file = os.path.join('..', 'data', 'raw', 'bitcoin', 'bitcoin_historical_data.csv')
+    output_dir = os.path.join('..', 'data', 'processed', 'bitcoin')
+    os.makedirs(output_dir, exist_ok=True)
+    
+    if not os.path.exists(raw_file):
+        print(f" ❌ Error: Bitcoin raw file not found at {raw_file}")
+        return
+
+    # 1. Load Data
+    # Optimization: Loading with specific types can save memory
+    print(" - Loading CSV (this may take a moment due to file size)...")
+    df = pd.read_csv(raw_file)
+
+    # 2. Handle Timestamps
+    # The mczielinski dataset uses a 'timestamp' column (Unix seconds)
+    if 'timestamp' in df.columns:
+        print(" - Converting Unix timestamps to datetime objects...")
+        df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
+    
+    # 3. Handle Null Values
+    # Many minute-level crypto datasets have NaNs during periods of no trade
+    null_count = df.isnull().any(axis=1).sum()
+    if null_count > 0:
+        print(f" - Found {null_count:,} rows with missing values. Dropping them...")
+        df = df.dropna()
+
+    # 4. Final Metadata Check
+    print(f" - Total rows processed: {len(df):,}")
+    print(f" - Time range: {df['timestamp'].min()} to {df['timestamp'].max()}")
+
+    # 5. Save as Parquet
+    # We use Parquet because it preserves the 'Timestamp' datatype automatically
+    output_path = os.path.join(output_dir, 'bitcoin_cleaned.parquet')
+    df.to_parquet(output_path, index=False)
+    print(f" ✅ Bitcoin processing complete. Saved to: {output_path}")
+
+if __name__ == "__main__":
+    process_bitcoin()

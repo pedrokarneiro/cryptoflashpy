@@ -1,0 +1,76 @@
+import os
+import pandas as pd
+import sys
+
+def run_eda(asset, mode="before"):
+    # 1. Configuration (Keep your paths organized)
+    # asset = "ethereum" or "bitcoin"
+    
+    if mode == "before":
+        # Adjust this path to wherever kagglehub saved your file
+        input_file = os.path.join('..', 'data', 'raw', asset, f'{asset}_historical_data.csv')
+        output_name = f"{asset}_eda_BEFORE.md"
+    else:
+        input_file = os.path.join('..', 'data', 'processed', asset, f"{asset}_cleaned.parquet")
+        output_name = f"{asset}_eda_AFTER.md"
+
+    output_path = os.path.join('..', 'data', 'raw', asset, output_name)
+    
+    if not os.path.exists(input_file):
+        print(f" ❌ Error: File not found at {input_file}")
+        return
+
+    print(f" --- Running {asset.capitalize()} EDA ({mode.upper()}) ---")
+    
+    # 2. Load Data (Smart detection)
+    if input_file.endswith('.csv'):
+        df = pd.read_csv(input_file)
+        if 'timestamp' in df.columns and not pd.api.types.is_datetime64_any_dtype(df['timestamp']):
+            df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
+    else:
+        df = pd.read_parquet(input_file)
+
+    # 3. Gather Statistics (The parts you wanted back!)
+    total_rows = len(df)
+    missing_values = df.isnull().sum()
+    desc_stats = df.describe()
+    date_min, date_max = df['timestamp'].min(), df['timestamp'].max()
+    peak_price = df['high'].max()
+    peak_date = df.loc[df['high'].idxmax(), 'timestamp']
+
+    # 4. Generate the Markdown Report
+    with open(output_path, 'w') as f:
+        f.write(f"# {asset.capitalize()} EDA Report: {mode.upper()}\n\n")
+        
+        f.write("## 1. Data Overview\n")
+        f.write(f"- **Mode:** {mode.upper()} Processing\n")
+        f.write(f"- **Observations:** {total_rows:,}\n")
+        f.write(f"- **Time Coverage:** {date_min} to {date_max}\n\n")
+        
+        f.write("## 2. Integrity Check\n")
+        f.write("```text\n")
+        f.write(missing_values.to_string())
+        f.write("\n```\n\n")
+        
+        if missing_values.sum() == 0:
+            f.write("> ✅ **Verification:** No missing values found.\n\n")
+        
+        f.write("## 3. Descriptive Statistics\n")
+        f.write(desc_stats.to_markdown())
+        f.write("\n\n")
+        
+        f.write("## 4. Key Insights\n")
+        f.write(f"- **Highest Price Recorded:** ${peak_price:,.2f} ({peak_date})\n")
+        f.write(f"- **Average Price:** ${df['close'].mean():,.2f}\n")
+
+    print(f" ✅ Report generated: {output_path}")
+
+if __name__ == "__main__":
+    # Asset is always the first argument; mode is optional
+    asset = sys.argv[1] if len(sys.argv) > 1 else None
+    mode = sys.argv[2] if len(sys.argv) > 2 else "before"
+
+    if not asset:
+        print("❌ Error: asset name required (e.g. bitcoin or ethereum)")
+        sys.exit(1)
+    run_eda(asset, mode)

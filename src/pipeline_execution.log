@@ -1,0 +1,28 @@
+
+--- get_bitcoin_data.py  ---
+--- Starting Download: mczielinski/bitcoin-historical-data ---
+Dataset URL: https://www.kaggle.com/datasets/mczielinski/bitcoin-historical-data
+✅ Bitcoin data saved and unzipped to: ../data/raw/bitcoin
+🔍 Normalizing column names to lowercase...
+✅ Column names normalized.
+🔄 Filename changed to: bitcoin_historical_data.csv
+
+--- get_ethereum_data.py  ---
+--- Starting Download: viniciusqroz/ethereum-historical-data ---
+Dataset URL: https://www.kaggle.com/datasets/viniciusqroz/ethereum-historical-data
+✅ Ethereum data saved and unzipped to: ../data/raw/ethereum
+🔍 Normalizing column names to lowercase...
+✅ Column names normalized.
+🔄 Filename changed to: ethereum_historical_data.csv
+
+--- eda.py bitcoin before ---
+ --- Running Bitcoin EDA (BEFORE) ---
+ - Loading raw CSV for bitcoin...
+ ✅ Report generated: ../data/raw/bitcoin/bitcoin_eda_BEFORE.md
+
+--- eda.py ethereum before ---
+ --- Running Ethereum EDA (BEFORE) ---
+ - Loading raw CSV for ethereum...
+ ✅ Report generated: ../data/raw/ethereum/ethereum_eda_BEFORE.md
+
+--- process_bitcoin_to_mongodb.py  ---

@@ -1,0 +1,23 @@
+# Data and Datasets
+# Exclude all files in the data folder to keep the repo light
+data/
+!data/.gitkeep
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment and Secrets
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Docker
+.docker/
+
+# OS specific files
+.DS_Store
+Thumbs.db

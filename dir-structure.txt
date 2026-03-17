@@ -1,0 +1,11 @@
+cryptoflashpy/
+├── dir-structure          # This file
+├── docker-compose.yml     # Docker configuration
+├── .gitignore             # Tells Git which files to ignore (data, caches)
+├── requirements.txt       # Python dependencies (pandas, etc.)
+├── data/                  # Root data directory
+│   ├── .gitkeep           # Ensures the folder exists in Git
+│   ├── raw/               # Original, immutable data
+│   └── processed/         # Data transformed by your scripts
+└── src/                   # Python source code
+    └── main.py            # Your entry point script

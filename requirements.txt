@@ -1,0 +1,7 @@
+kaggle
+pandas
+tabulate
+pymongo
+numpy
+python-dotenv
+tqdm
