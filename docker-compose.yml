@@ -19,8 +19,8 @@ services:
     depends_on:
       - mongodb # Ensures DB starts before Python
     environment:
-      - KAGGLE_USERNAME=pedrocarneirojr1971
-      - KAGGLE_KEY=KGAT_dd1d337ee9b1823b50164d1ea3a36ff0
+      - KAGGLE_USERNAME=<your user here>
+      - KAGGLE_KEY=<your key here>
       - LOG_LEVEL=DEBUG
       - MONGO_URI=mongodb://mongodb:27017/ # Use the service name as the hostname
     volumes:
