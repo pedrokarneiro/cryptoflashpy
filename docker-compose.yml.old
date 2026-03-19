@@ -5,9 +5,9 @@ services:
     container_name: cryptoflash-db-container
     hostname: cryptoflash-db-container
     ports:
-      - "27017:27017"
+      - "27017:27017" # Maps local Lucca laptop port to container port
     volumes:
-      - mongo-data:/data/db
+      - mongo-data:/data/db # Persists your data even if container stops
     networks:
       - cryptoflash-net
 
@@ -17,10 +17,12 @@ services:
     container_name: cryptoflashpy-dev
     hostname: cryptoflashpy-dev
     depends_on:
-      - mongodb
-    # LOAD SECRETS HERE:
-    env_file:
-      - .env
+      - mongodb # Ensures DB starts before Python
+    environment:
+      - KAGGLE_USERNAME=<your user here>
+      - KAGGLE_KEY=<your key here>
+      - LOG_LEVEL=DEBUG
+      - MONGO_URI=mongodb://mongodb:27017/ # Use the service name as the hostname
     volumes:
       - .:/app
     working_dir: /app/src
@@ -28,11 +30,13 @@ services:
     stdin_open: true
     networks:
       - cryptoflash-net
+# AUTOMATION: Installs requirements, then leaves the bash shell open for you
     command: >
       bash -c "pip install --upgrade pip && 
                pip install -r /app/requirements.txt && 
                /bin/bash"
 
+# Define the network and volume
 networks:
   cryptoflash-net:
     driver: bridge

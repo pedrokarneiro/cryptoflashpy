@@ -21,3 +21,10 @@ ENV/
 # OS specific files
 .DS_Store
 Thumbs.db
+
+# --- Backup & Junk Files ---
+*.old
+*.bak
+*.tmp
+*.temp
+*~

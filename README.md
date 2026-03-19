@@ -51,8 +51,34 @@ cryptoflashpy/
 * Kaggle API Credentials (Username and Key)
 
 ### 2. Environment Configuration
-Ensure your `.env` file or `docker-compose.yml` environment block contains your Kaggle credentials and the MongoDB connection string:
-`MONGO_URI=mongodb://mongodb:27017/`
+1. Copy the example environment file as a regular environment (`.env`) file like this:
+   ```bash
+   cp .env.example .env
+   ```
+2. Open `.env` and insert your actual Kaggle credentials.
+**Note:** The `.env` file is ignored by Git to **protect your secrets**.
+
+3. Add this to your .gitignore file:
+```# Secrets and Credentials
+.env
+```
+4. Before you do any `git push`, run this command in your WSL terminal to ensure your `.env` is properly ignored and won't be uploaded:
+
+```bash
+git check-ignore -v .env
+```
+* If it returns a path: You are safe! Git is ignoring the file.
+* If it returns nothing: Your  `.gitignore` isn't working for that file yet. Run git rm --cached .env to remove it from the index.
+
+5. To be 100% certain your credentials are safe before your next push, run this command in your terminal:
+```
+git status
+```
+* If you see .env listed under "Untracked files" (and it's red) or it doesn't show up at all.
+
+* If you see .env listed under "Changes to be committed" or "Modified" (and it's green).
+
+---
 
 ### 3. Container Initialization
 Build and start the infrastructure:
