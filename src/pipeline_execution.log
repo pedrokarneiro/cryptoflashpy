@@ -17,12 +17,68 @@ Dataset URL: https://www.kaggle.com/datasets/viniciusqroz/ethereum-historical-da
 
 --- eda.py bitcoin before ---
  --- Running Bitcoin EDA (BEFORE) ---
- - Loading raw CSV for bitcoin...
  ✅ Report generated: ../data/raw/bitcoin/bitcoin_eda_BEFORE.md
 
 --- eda.py ethereum before ---
  --- Running Ethereum EDA (BEFORE) ---
- - Loading raw CSV for ethereum...
  ✅ Report generated: ../data/raw/ethereum/ethereum_eda_BEFORE.md
 
 --- process_bitcoin_to_mongodb.py  ---
+--- Bitcoin Transformation Started: 2026-03-19 21:00:50 ---
+ - Loading CSV...
+ - Converting Unix timestamps to datetime objects...
+ - Preparing 7,473,282 records for MongoDB...
+ - Clearing old records in 'bitcoin_history'...
+
+--- Bitcoin Transformation Finished: 2026-03-19 21:03:08 ---
+⏱️ Total time elapsed: 2.30 minutes
+ ✅ MongoDB injection complete. Collection: cryptoflash_db.bitcoin_history
+ERRORS:
+
+💾 Injecting Bitcoin Data:   0%|          | 0/7473282 [00:00<?, ?rows/s]
+💾 Injecting Bitcoin Data:   7%|▋         | 500000/7473282 [00:05<01:17, 89882.74rows/s]
+💾 Injecting Bitcoin Data:  13%|█▎        | 950000/7473282 [00:11<01:19, 82095.02rows/s]
+💾 Injecting Bitcoin Data:  21%|██        | 1550000/7473282 [00:16<01:00, 97349.04rows/s]
+💾 Injecting Bitcoin Data:  27%|██▋       | 2050000/7473282 [00:22<00:59, 91428.84rows/s]
+💾 Injecting Bitcoin Data:  35%|███▍      | 2600000/7473282 [00:28<00:52, 93693.27rows/s]
+💾 Injecting Bitcoin Data:  42%|████▏     | 3150000/7473282 [00:33<00:44, 98170.68rows/s]
+💾 Injecting Bitcoin Data:  50%|████▉     | 3700000/7473282 [00:39<00:39, 96657.98rows/s]
+💾 Injecting Bitcoin Data:  56%|█████▌    | 4200000/7473282 [00:45<00:35, 92738.03rows/s]
+💾 Injecting Bitcoin Data:  64%|██████▍   | 4800000/7473282 [00:50<00:26, 99049.41rows/s]
+💾 Injecting Bitcoin Data:  72%|███████▏  | 5350000/7473282 [00:55<00:20, 101897.24rows/s]
+💾 Injecting Bitcoin Data:  79%|███████▉  | 5900000/7473282 [01:00<00:15, 104074.69rows/s]
+💾 Injecting Bitcoin Data:  87%|████████▋ | 6500000/7473282 [01:05<00:09, 107329.94rows/s]
+💾 Injecting Bitcoin Data:  94%|█████████▍| 7050000/7473282 [01:12<00:04, 97623.01rows/s] 
+💾 Injecting Bitcoin Data: 100%|██████████| 7473282/7473282 [01:16<00:00, 97395.44rows/s]
+
+--- process_ethereum_to_mongodb.py  ---
+--- Ethereum Transformation Started: 2026-03-19 21:03:10 ---
+ - Loading Ethereum CSV...
+ - Converting Unix timestamps to datetime objects...
+ - Preparing 4,409,793 records for MongoDB...
+ - Clearing old records in 'ethereum_history'...
+
+--- Ethereum Transformation Finished: 2026-03-19 21:04:21 ---
+⏱️ Total time elapsed: 1.19 minutes
+ ✅ Ethereum processing complete. Collection: cryptoflash_db.ethereum_history
+ERRORS:
+
+💾 Injecting Ethereum Data:   0%|          | 0/4409793 [00:00<?, ?rows/s]
+💾 Injecting Ethereum Data:  12%|█▏        | 550000/4409793 [00:05<00:35, 108161.99rows/s]
+💾 Injecting Ethereum Data:  26%|██▌       | 1150000/4409793 [00:10<00:29, 110603.16rows/s]
+💾 Injecting Ethereum Data:  40%|███▉      | 1750000/4409793 [00:17<00:26, 99775.54rows/s] 
+💾 Injecting Ethereum Data:  52%|█████▏    | 2300000/4409793 [00:23<00:22, 94915.83rows/s]
+💾 Injecting Ethereum Data:  65%|██████▍   | 2850000/4409793 [00:28<00:15, 99536.71rows/s]
+💾 Injecting Ethereum Data:  77%|███████▋  | 3400000/4409793 [00:33<00:09, 101739.09rows/s]
+💾 Injecting Ethereum Data:  90%|████████▉ | 3950000/4409793 [00:39<00:04, 101374.52rows/s]
+💾 Injecting Ethereum Data: 100%|██████████| 4409793/4409793 [00:43<00:00, 101556.48rows/s]
+
+--- eda.py bitcoin after ---
+ --- Running Bitcoin EDA (AFTER) ---
+ - Executing MongoDB Aggregation for bitcoin...
+ ✅ Report generated: ../data/processed/bitcoin/bitcoin_eda_AFTER.md
+
+--- eda.py ethereum after ---
+ --- Running Ethereum EDA (AFTER) ---
+ - Executing MongoDB Aggregation for ethereum...
+ ✅ Report generated: ../data/processed/ethereum/ethereum_eda_AFTER.md

@@ -23,17 +23,22 @@ def process_ethereum():
     print(" - Loading Ethereum CSV...")
     df = pd.read_csv(raw_file)
 
-    # 2. Standardize Column Names & Types
-    if 'date' in df.columns:
-        print(" - Converting 'Date' strings to datetime objects...")
-        df['timestamp'] = pd.to_datetime(df['date'])
-        df = df.drop(columns=['date'])
-    
-    # Ensure columns are ordered with Timestamp first
-    cols = ['timestamp'] + [c for c in df.columns if c != 'timestamp']
-    df = df[cols]
+    # 2. Handle Timestamps and column order
+    if 'timestamp' in df.columns:
+        print(" - Converting Unix timestamps to datetime objects...")
+        df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
 
-    # 3. Save to MongoDB
+    # ...ensure column order (in case we have other cryptocurrencies with different schemas in the future)
+    schema_cols = ['timestamp', 'open', 'high', 'low', 'close', 'volume']
+    df = df[schema_cols]
+
+    # 3. Handle Null Values
+    null_count = df.isnull().any(axis=1).sum()
+    if null_count > 0:
+        print(f" - Found {null_count:,} rows with missing values. Dropping them...")
+        df = df.dropna()
+    
+    # 4. Save to MongoDB
     total_records = len(df)
     print(f" - Preparing {total_records:,} records for MongoDB...")
     
@@ -47,15 +52,14 @@ def process_ethereum():
         print(" - Clearing old records in 'ethereum_history'...")
         collection.delete_many({})
 
-        # 4. CHUNKED INSERTION (Memory Efficient)
+        # 5. CHUNKED INSERTION (Memory Efficient)
         chunk_size = 50000
         
         # tqdm tweak: mininterval=5 prevents flooding the pipeline log
         with tqdm(total=total_records, desc="💾 Injecting Ethereum Data", unit="rows", mininterval=5) as pbar:
             for i in range(0, total_records, chunk_size):
                 # Slice the DataFrame and convert ONLY this chunk to dicts
-                chunk = df.iloc[i : i + chunk_size].to_dict('records')
-                
+                chunk = df.iloc[i : i + chunk_size].to_dict('records')               
                 if chunk:
                     collection.insert_many(chunk)
                     pbar.update(len(chunk))

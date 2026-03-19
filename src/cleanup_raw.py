@@ -9,7 +9,7 @@ def cleanup_raw_data():
     ]
 
     # Extensions we want to remove (the heavy stuff)
-    extensions_to_delete = ['*.csv', '*.zip']
+    extensions_to_delete = ['*.csv', '*.zip', '*.md']
 
     print("--- Starting Cleanup of Raw Data ---")
     

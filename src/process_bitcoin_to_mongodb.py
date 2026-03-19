@@ -22,10 +22,14 @@ def process_bitcoin():
     print(" - Loading CSV...")
     df = pd.read_csv(raw_file)
 
-    # 2. Handle Timestamps
+    # 2. Handle Timestamps and column order
     if 'timestamp' in df.columns:
         print(" - Converting Unix timestamps to datetime objects...")
         df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
+    
+    # ...ensure column order (in case we have other cryptocurrencies with different schemas in the future)
+    schema_cols = ['timestamp', 'open', 'high', 'low', 'close', 'volume']
+    df = df[schema_cols]
     
     # 3. Handle Null Values
     null_count = df.isnull().any(axis=1).sum()
@@ -38,19 +42,22 @@ def process_bitcoin():
     print(f" - Preparing {total_records:,} records for MongoDB...")
     
     try:
+        # Connection to MongoDB container
         client = MongoClient('mongodb://mongodb:27017/')
         db = client['cryptoflash_db']
         collection = db['bitcoin_history']
 
+        # Clear old records
         print(" - Clearing old records in 'bitcoin_history'...")
         collection.delete_many({})
 
         # 5. CHUNKED INSERTION (Memory Efficient)
         chunk_size = 50000 
         
-        # tqdm tweak: mininterval=5 prevents flooding the log with every single update
+        # tqdm tweak: mininterval=5 prevents flooding the pipeline log
         with tqdm(total=total_records, desc="💾 Injecting Bitcoin Data", unit="rows", mininterval=5) as pbar:
             for i in range(0, total_records, chunk_size):
+                # Slice the DataFrame and convert ONLY this chunk to dicts
                 chunk = df.iloc[i : i + chunk_size].to_dict('records')
                 if chunk:
                     collection.insert_many(chunk)
