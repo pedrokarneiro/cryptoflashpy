@@ -29,17 +29,16 @@ cryptoflashpy/
 │   ├── raw/                # Original datasets & EDA reports (Immutable)
 │   └── processed/          # Final EDA reports (Database source verification)
 ├── src/
-│   ├── get_bitcoin_data.py    # Ingestion: BTC via Kaggle
-│   ├── get_ethereum_data.py   # Ingestion: ETH via Kaggle
-│   ├── eda.py                 # Data Audit: Generates Markdown reports (Before/After)
-│   ├── process_bitcoin.py     # Transformation & Mongo Injection: BTC
-│   ├── process_ethereum.py    # Transformation & Mongo Injection: ETH
-│   ├── run_pipeline.py        # Master Orchestrator (with Log Generation)
 │   ├── check_env.py           # Sanity Check: Validates Mongo & Python deps
-│   └── connection_test.py     # Connectivity Diagnostic
-├── .env                    # Secrets & API Keys
+│   ├── connection_test.py     # Connectivity Diagnostic
+│   ├── eda.py                 # Data Audit: Generates Markdown reports (Before/After)
+│   ├── get_crypto_data.py     # Ingestion: Generic Kaggle downloader
+│   ├── market_assets.py       # Configuration: Defines symbols, datasets, mappings
+│   ├── process_crypto_to_mongodb.py # Transformation & Mongo Injection: Generic processor
+│   └── run_pipeline.py        # Master Orchestrator (with Log Generation)
+├── .env                    # Secrets & API Keys (Git ignored)
 ├── docker-compose.yml      # Environment Definition (Mongo + Python)
-└── requirements.txt        # Python Dependencies (Pandas, PyMongo, TQDM)
+└── requirements.txt        # Python Dependencies (Pandas, PyMongo, TQDM, etc.)
 ```
 
 ---

@@ -8,4 +8,4 @@ cryptoflashpy/
 │   ├── raw/               # Original, immutable data
 │   └── processed/         # Data transformed by your scripts
 └── src/                   # Python source code
-    └── main.py            # Your entry point script
+    └── run_pipeline.py    # Your entry point script (orchestrator)
